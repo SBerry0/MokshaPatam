@@ -1,9 +1,9 @@
 Name: YOUR NAME HERE
 
-| Date    |  Time  |                                     Update |
-|:--------|:------:|-------------------------------------------:|
-| April 5 | 9-10pm | I tried to write abstract, efficient code. |
-|         |        |                                            |
+| Date   |    Time     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     Update |
+|:-------|:-----------:|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| Aug 30 | 4:00-4:30pm | The first thing I did was to turn the two input arrays of the snakes and the ladders into one because they are essentially the same thing with having one square teleport to another. After I did that, it makes it much easier to check if the square I'm on is in that array. Next I started to make the breadth first search by doing a pretty similar thing to what we did last year in MazeSolver, so I opened that up and started on it. I'm planning on making a DFS version as well and check which one is faster. |
+|        |             |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 
 To add a new row to the table, click into a cell and then hit shift-enter.
