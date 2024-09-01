@@ -78,7 +78,9 @@ public class MokshaPatamTest {
             {
                 int answer = Integer.parseInt(answerReader.readLine());
                 loadTest(testReader);
-                assertEquals(answer, studentSolution.fewestMoves(boardsize, ladders, snakes),
+//                assertEquals(answer, studentSolution.fewestMoves(boardsize, ladders, snakes),
+//                        "Test " + testNumber + " failed: should return " + answer);
+                assertEquals(answer, studentSolution.BFS(boardsize, ladders, snakes),
                         "Test " + testNumber + " failed: should return " + answer);
             }
         } catch (IOException e) {
