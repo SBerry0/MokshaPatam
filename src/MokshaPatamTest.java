@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -25,6 +26,18 @@ public class MokshaPatamTest {
     private int boardsize;
     private int[][] ladders;
     private int[][] snakes;
+
+    @Test
+    @Timeout(value = 1, unit = TimeUnit.SECONDS)
+    public void testStack() {
+        Stack<Integer> possibilities = new Stack<>();
+        possibilities.push(6);
+        possibilities.push(4);
+        possibilities.push(5);
+        possibilities.push(31);
+        possibilities.push(3);
+        MokshaPatam.sortStack(possibilities);
+    }
 
     @Test
     @Timeout(value = 1, unit = TimeUnit.SECONDS)
