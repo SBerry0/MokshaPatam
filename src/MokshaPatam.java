@@ -1,5 +1,3 @@
-import java.io.LineNumberReader;
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -37,11 +35,9 @@ public class MokshaPatam {
             return false;
         }
         if (!inArr(snakes, newPos)) {
-            System.out.println(newPos + " is a snake!");
             return false;
         }
         if (newPos > boardSize) {
-            System.out.println(newPos + " is over 100");
             return false;
         }
         return true;
@@ -60,11 +56,9 @@ public class MokshaPatam {
             }
         }
         if (!inArr(snakes, newPos)) {
-            System.out.println(newPos + " is a snake!");
             return false;
         }
         if (newPos > boardSize) {
-            System.out.println(newPos + " is over 100");
             return false;
         }
         return true;
@@ -80,9 +74,9 @@ public class MokshaPatam {
     }
 
     public static int fewestMoves(int endCell, int[][] ladders, int[][] snakes) {
-        System.out.println(endCell);
-        System.out.println(Arrays.deepToString(snakes));
-        System.out.println(Arrays.deepToString(ladders));
+        System.out.println(endCell + " cells");
+        System.out.println("Snakes: " + Arrays.deepToString(snakes));
+        System.out.println("Ladders: " + Arrays.deepToString(ladders));
         int[][] teleports = createSpecial(ladders, snakes);
         int pos;
 //        Queue<Integer> possibilities = new LinkedList<>();
@@ -91,11 +85,9 @@ public class MokshaPatam {
 //        int[] steps = {0, 0, 0, 0, 0, 0};
         int steps = -1;
         while (!possibilities.isEmpty() && possibilities.peek() != endCell) {
-            System.out.println(possibilities);
             possibilities = sortStack(possibilities);
             pos = possibilities.pop();
             steps ++;
-            System.out.println(pos);
             for (int i = 1; i < 7; i++) {
                 if (isDecentMove(teleports, snakes, possibilities, pos, i, endCell)) {
                     possibilities.push(move(pos, i, teleports));
@@ -121,44 +113,52 @@ public class MokshaPatam {
                     int index = possibilities.search(move(arr[0], 0, teleports));
                     if (index >= 0) {
 //                        System.out.println("removing index " + index);
-                        System.out.println(possibilities.remove(possibilities.size() - index));
+                        possibilities.remove(possibilities.size() - index);
                     }
                     possibilities.push(move(arr[0], 0, teleports));
                 }
             }
         }
-        System.out.println(possibilities);
         return steps + 1;
     }
 
     public static int BFS(int endCell, int[][] ladders, int[][] snakes) {
-        System.out.println(endCell);
-        System.out.println(Arrays.deepToString(snakes));
-        System.out.println(Arrays.deepToString(ladders));
+        System.out.println(endCell + " cells");
+        System.out.println("Snakes: " + Arrays.deepToString(snakes));
+        System.out.println("Ladders: " + Arrays.deepToString(ladders));
         int[][] teleports = createSpecial(ladders, snakes);
         int pos;
         // Holding {square number : number of steps to get to that square}
         Queue<int[]> possibilities = new LinkedList<>();
+        Set<Integer> visited = new HashSet<>();
         possibilities.add(new int[] {1, 0});
         while (possibilities.peek()[0] != endCell) {
-            Iterator<int[]> possibilitiesIterator = possibilities.iterator();
+//            Iterator<int[]> possibilitiesIterator = possibilities.iterator();
             // Iterating Queue
-            while (possibilitiesIterator.hasNext()) {
-                int[] values = possibilitiesIterator.next();
-                System.out.print(Arrays.toString(values));
-            }
-//            System.out.println(possibilities);
-//            possibilities = sortStack(possibilities);
+//            while (possibilitiesIterator.hasNext()) {
+//                int[] values = possibilitiesIterator.next();
+//                System.out.print(Arrays.toString(values));
+//                System.out.print(", ");
+//            }
             int[] item = possibilities.remove();
             pos = item[0];
             int steps = item[1];
-//            System.out.println(pos);
-            for (int i = 1; i < 7; i++) {
+            visited.add(pos);
+            for (int i = 6; i > 0; i--) {
                 if (isDecentMove(teleports, snakes, possibilities, pos, i, endCell)) {
                     possibilities.add(new int[] {move(pos, i, teleports), steps+1});
                 }
             }
+            // Subtract the number of snakes because their heads will never be visited.
+            // Subtract two for the cells 0 and 100 which will never be visited
+            if (visited.size() >= endCell - snakes.length - 2) {
+                System.out.println("No Solution");
+                System.out.println();
+                return -1;
+            }
         }
+        System.out.println(possibilities.peek()[1] + " steps");
+        System.out.println();
         return possibilities.peek()[1];
     }
 
