@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Moksha Patam
@@ -37,10 +34,22 @@ public class MokshaPatam {
         return specials;
     }
 
-    private static boolean isDecentMove(int[][] teleports, int[][] snakes, int position, int move) {
-        Arrays.sort(snakes[0]);
+    private static boolean isDecentMove(int[][] teleports, int[][] snakes, Stack<Integer> possibilities, int position, int move) {
+//        Arrays.sort(snakes[0]);
         int newPos = move(position, move, teleports);
-        if (newPos > 100 || Arrays.binarySearch(snakes[0], newPos) != -1) {
+        for (int i : possibilities) {
+            if (i == newPos) {
+                System.out.println(i + " ==? " + newPos);
+                return false;
+            }
+        }
+        for (int[] arr : snakes) {
+            if (arr[1] == newPos) {
+
+            }
+        }
+        if (newPos > 100) {
+            System.out.println(newPos + " is over 100");
             return false;
         }
         return true;
@@ -51,51 +60,64 @@ public class MokshaPatam {
 //        System.out.println(Arrays.deepToString(ladders));
 //        System.out.println(Arrays.deepToString(snakes));
         int[][] teleports = createSpecial(ladders, snakes);
-        System.out.println(Arrays.deepToString(teleports));
+        System.out.println(Arrays.deepToString(snakes));
+        System.out.println(Arrays.deepToString(ladders));
         int pos;
-        Queue<Integer> possibilities = new LinkedList<>();
+//        Queue<Integer> possibilities = new LinkedList<>();
+        Stack<Integer> possibilities = new Stack<>();
         possibilities.add(1);
         int[] steps = {0, 0, 0, 0, 0, 0};
         while (!possibilities.isEmpty() && possibilities.peek() != endCell) {
-            pos = possibilities.remove();
+            System.out.println(possibilities);
+            pos = possibilities.pop();
             System.out.println(pos);
-            System.out.println(Arrays.toString(steps));
+//            System.out.println(Arrays.toString(steps));
 
-            if (isDecentMove(teleports, snakes, pos, 6)) {
-                possibilities.add(pos+6);
-                steps[5] ++;
-            } else {
-                steps[5] = -1;
-            }
-            if (isDecentMove(teleports, snakes, pos, 5)) {
-                possibilities.add(pos+5);
-                steps[4] ++;
-            } else {
-                steps[4] = -1;
-            }
-            if (isDecentMove(teleports, snakes, pos, 4)) {
-                possibilities.add(pos+4);
-                steps[3] ++;
-            } else {
-                steps[3] = -1;
-            }
-            if (isDecentMove(teleports, snakes, pos, 3)) {
-                possibilities.add(pos+3);
-                steps[2] ++;
-            } else {
-                steps[2] = -1;
-            }
-            if (isDecentMove(teleports, snakes, pos, 2)) {
-                possibilities.add(pos+2);
-                steps[1] ++;
-            } else {
-                steps[1] = -1;
-            }
-            if (isDecentMove(teleports, snakes, pos, 1)) {
-                possibilities.add(pos+1);
+            if (isDecentMove(teleports, snakes, possibilities, pos, 1)) {
+                possibilities.push(pos+1);
                 steps[0] ++;
             } else {
+                System.out.println((pos + 1) + " is not decent");
+
                 steps[0] = -1;
+            }
+            if (isDecentMove(teleports, snakes, possibilities, pos, 2)) {
+                possibilities.push(pos+2);
+                steps[1] ++;
+            } else {
+                System.out.println((pos + 2) + " is not decent");
+
+                steps[1] = -1;
+            }
+            if (isDecentMove(teleports, snakes, possibilities, pos, 3)) {
+                possibilities.push(pos+3);
+                steps[2] ++;
+            } else {
+                System.out.println((pos + 3) + " is not decent");
+
+                steps[2] = -1;
+            }
+            if (isDecentMove(teleports, snakes, possibilities, pos, 4)) {
+                possibilities.push(pos+4);
+                steps[3] ++;
+            } else {
+                System.out.println((pos + 4) + " is not decent");
+
+                steps[3] = -1;
+            }
+            if (isDecentMove(teleports, snakes, possibilities, pos, 5)) {
+                possibilities.push(pos+5);
+                steps[4] ++;
+            } else {
+                System.out.println((pos + 5) + " is not decent");
+                steps[4] = -1;
+            }
+            if (isDecentMove(teleports, snakes, possibilities, pos, 6)) {
+                possibilities.push(pos+6);
+                steps[5] ++;
+            } else {
+                System.out.println((pos + 6) + " is not decent");
+                steps[5] = -1;
             }
 
 //            boolean hasSolution = true;
