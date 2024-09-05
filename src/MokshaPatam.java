@@ -11,142 +11,69 @@ import java.util.*;
  */
 
 public class MokshaPatam {
-    private static int[][] createSpecial(int[][] ladders, int[][] snakes) {
-        int[] inputSquares = new int[ladders.length + snakes.length];
-        int[] outputSquares = new int[ladders.length + snakes.length];
-        int i = 0;
+    private static int[] createSpecial(int[][] ladders, int[][] snakes, int end) {
+        // Create a map for the special moves
+        int[] outs = new int[end+1];
+
         for(int[] arr : ladders) {
-            inputSquares[i] = arr[0];
-            outputSquares[i++] = arr[1];
+            outs[arr[0]] = arr[1];
         }
         for(int[] arr : snakes) {
-            inputSquares[i] = arr[0];
-            outputSquares[i++] = arr[1];
+            outs[arr[0]] = arr[1];
         }
-        int[][] specials = new int[2][outputSquares.length];
-        specials[0] = inputSquares;
-        specials[1] = outputSquares;
-        return specials;
+
+        return outs;
     }
 
-    private static boolean isDecentMove(int[][] teleports, int[][] snakes, Stack<Integer> possibilities, int position, int move, int boardSize) {
-        int newPos = move(position, move, teleports);
-        if (possibilities.search(newPos) != -1) {
-            return false;
-        }
-        if (!inArr(snakes, newPos)) {
-            return false;
-        }
-        if (newPos > boardSize) {
-            return false;
-        }
-        return true;
-    }
-
-    private static boolean isDecentMove(int[][] teleports, int[][] snakes, Queue<int[]> possibilities, int position, int move, int boardSize) {
-        int newPos = move(position, move, teleports);
-
+    // Checking if a move should be made
+    private static boolean isDecentMove(int[] teleports, Queue<int[]> possibilities, int move, int boardSize) {
         // From: https://www.geeksforgeeks.org/how-to-iterate-over-a-queue-in-java/
         Iterator<int[]> possibilitiesIterator = possibilities.iterator();
-        // Iterating Queue
+        // If it is already in the queue don't add it
         while (possibilitiesIterator.hasNext()) {
             int[] values = possibilitiesIterator.next();
-            if (values[0] == newPos) {
+            if (values[0] == move) {
                 return false;
             }
         }
-        if (!inArr(snakes, newPos)) {
+        // If the move exceeds the size of the board, don't add it
+        if (move > boardSize) {
             return false;
         }
-        if (newPos > boardSize) {
+        // There is a snake's head on the square, don't add it
+        // (could backfire if a solution requires going down a snake to complete it)
+        if (teleports[move] != 0 && teleports[move] < move) {
             return false;
         }
+        // Otherwise add it to the queue
         return true;
-    }
-
-    private static boolean inArr(int[][] arr, int target) {
-        for (int[] array : arr) {
-            if (array[0] == target) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static int fewestMoves(int endCell, int[][] ladders, int[][] snakes) {
-        System.out.println(endCell + " cells");
-        System.out.println("Snakes: " + Arrays.deepToString(snakes));
-        System.out.println("Ladders: " + Arrays.deepToString(ladders));
-        int[][] teleports = createSpecial(ladders, snakes);
-        int pos;
-//        Queue<Integer> possibilities = new LinkedList<>();
-        Stack<Integer> possibilities = new Stack<>();
-        possibilities.add(1);
-//        int[] steps = {0, 0, 0, 0, 0, 0};
-        int steps = -1;
-        while (!possibilities.isEmpty() && possibilities.peek() != endCell) {
-            possibilities = sortStack(possibilities);
-            pos = possibilities.pop();
-            steps ++;
-            for (int i = 1; i < 7; i++) {
-                if (isDecentMove(teleports, snakes, possibilities, pos, i, endCell)) {
-                    possibilities.push(move(pos, i, teleports));
-                }
-            }
-//            if (isDecentMove(teleports, snakes, possibilities, pos, 1, endCell)) {
-//                possibilities.push(move(pos, 1, teleports));
-//            } if (isDecentMove(teleports, snakes, possibilities, pos, 2, endCell)) {
-//                possibilities.push(move(pos, 2, teleports));
-//            } if (isDecentMove(teleports, snakes, possibilities, pos, 3, endCell)) {
-//                possibilities.push(move(pos, 3, teleports));
-//            } if (isDecentMove(teleports, snakes, possibilities, pos, 4, endCell)) {
-//                possibilities.push(move(pos, 4, teleports));
-//            } if (isDecentMove(teleports, snakes, possibilities, pos, 5, endCell)) {
-//                possibilities.push(move(pos, 5, teleports));
-//            } if (isDecentMove(teleports, snakes, possibilities, pos, 6, endCell)) {
-//                possibilities.push(move(pos,  6, teleports));
-//            }
-            // Pushing squares with snakes into the highest priority
-            for (int[] arr : ladders) {
-                if (arr[0] >= pos && arr[0] - 6 <= pos) {
-                    // Removing potential duplicate squares
-                    int index = possibilities.search(move(arr[0], 0, teleports));
-                    if (index >= 0) {
-//                        System.out.println("removing index " + index);
-                        possibilities.remove(possibilities.size() - index);
-                    }
-                    possibilities.push(move(arr[0], 0, teleports));
-                }
-            }
-        }
-        return steps + 1;
     }
 
     public static int BFS(int endCell, int[][] ladders, int[][] snakes) {
         System.out.println(endCell + " cells");
         System.out.println("Snakes: " + Arrays.deepToString(snakes));
         System.out.println("Ladders: " + Arrays.deepToString(ladders));
-        int[][] teleports = createSpecial(ladders, snakes);
+        // Create the map
+        int[] teleportMap = createSpecial(ladders, snakes, endCell);
         int pos;
-        // Holding {square number : number of steps to get to that square}
+        // {square number : number of steps to get to that square}
         Queue<int[]> possibilities = new LinkedList<>();
+        // Create a visited set to check if all possibilities have been checked, then return -1 if no solution is found
         Set<Integer> visited = new HashSet<>();
+        // Add starting square
         possibilities.add(new int[] {1, 0});
         while (possibilities.peek()[0] != endCell) {
-//            Iterator<int[]> possibilitiesIterator = possibilities.iterator();
-            // Iterating Queue
-//            while (possibilitiesIterator.hasNext()) {
-//                int[] values = possibilitiesIterator.next();
-//                System.out.print(Arrays.toString(values));
-//                System.out.print(", ");
-//            }
             int[] item = possibilities.remove();
+            // Store the position and number of steps of each item
             pos = item[0];
             int steps = item[1];
             visited.add(pos);
+            // Add next decent moves to the queue in reverse order
             for (int i = 6; i > 0; i--) {
-                if (isDecentMove(teleports, snakes, possibilities, pos, i, endCell)) {
-                    possibilities.add(new int[] {move(pos, i, teleports), steps+1});
+                int newMove = move(pos, i, teleportMap);
+                if (isDecentMove(teleportMap, possibilities, newMove, endCell)) {
+                    // Add the new move and increment the steps
+                    possibilities.add(new int[] {newMove, steps+1});
                 }
             }
             // Subtract the number of snakes because their heads will never be visited.
@@ -159,29 +86,18 @@ public class MokshaPatam {
         }
         System.out.println(possibilities.peek()[1] + " steps");
         System.out.println();
+        // Return the steps of the last square
         return possibilities.peek()[1];
     }
 
-    public static Stack<Integer> sortStack(Stack<Integer> input){
-        // Sorting a stack from lowest to highest, so the highest will be popped.
-        Stack<Integer> tempStack = new Stack<Integer>();
-        while(!input.isEmpty()){
-            int temp = input.pop();
-            while(!tempStack.isEmpty() && tempStack.peek() > temp){
-                input.push(tempStack.pop());
-            }
-            tempStack.push(temp);
-        }
-        return tempStack;
-    }
-
-    private static int move(int position, int stepSize, int[][]specialMoves) {
+    private static int move(int position, int stepSize, int[] specialMoves) {
         int newPos = position+stepSize;
-        for (int i = 0; i < specialMoves[0].length; i++) {
-            if (specialMoves[0][i] == newPos) {
-                return specialMoves[1][i];
-            }
+        // Check if the move will teleport by using the map
+        if (newPos <= 100 && specialMoves[newPos] != 0) {
+            // Return the special move
+            return specialMoves[newPos];
         }
+        // Otherwise return the position + the step size.
         return newPos;
     }
 }
